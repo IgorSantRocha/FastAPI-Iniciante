@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 class Item(BaseModel):
     id: int
+    quantidade: int
     descricao: str
     valor: float
 
@@ -29,7 +30,7 @@ def list_item():
 
 @app.get("/item/valor_total")
 def get_valor_total():
-    valor_total = 0.0
-    for item in banco_de_dados:
-        valor_total = item.valor * item.quantidade
+    valor_total = sum([item.valor * item.quantidade for item in banco_de_dados])
+    """for item in banco_de_dados:
+        valor_total += item.valor * item.quantidade"""
     return {"valor_total": valor_total}
