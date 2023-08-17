@@ -34,6 +34,28 @@ def test_obtem_um_papel_por_id(client: TestClient) -> None:
 
 def test_obtem_papel_inexistente_por_id(client: TestClient) -> None:
     response = client.get(f"/papeis/1")
-    # content = response.json()
+    content = response.json()
 
     assert response.status_code == 404
+    assert content["mensagem"] == "Entidade não encontrada"
+
+
+def test_update_papel_por_id(client: TestClient) -> None:
+    atributos = create_papel_valido()
+    papel = Papel(**atributos)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(papel.save())
+
+    novo_nome = "Novo_nome"
+    atributos_para_atualizar = {"nome": novo_nome}
+
+    response = client.patch(
+        f"/papeis/{papel.id}", json=atributos_para_atualizar)
+
+    content = response.json()
+
+    papel_atualizado = loop.run_until_complete(Papel.objects.get(id=papel.id))
+
+    assert response.status_code == 200
+    assert content["nome"] == novo_nome
+    assert papel_atualizado.nome == novo_nome
