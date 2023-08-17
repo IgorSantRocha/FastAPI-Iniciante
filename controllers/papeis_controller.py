@@ -39,3 +39,13 @@ async def patch_papel(propiedades_atualizacao: PapelUpdate, papel_id: int,
     except exceptions.NoMatch:
         response.status_code = 404
         return {"mensagem": "Entidade não encontrada"}
+
+
+@router.delete("/{papel_id}")
+async def delete_papel(papel_id: int, response: Response):
+    try:
+        papel = await Papel.objects.get(id=papel_id)
+        return await papel.delete()
+    except exceptions.NoMatch:
+        response.status_code = 404
+        return {"mensagem": "Entidade não encontrada"}
